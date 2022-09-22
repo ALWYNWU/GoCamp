@@ -1,0 +1,25 @@
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><b>GoCamp</b></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-link" href="/"><b>Home</b></a>
+          <a class="nav-link" href="/campgrounds"><b>Campgrounds</b></a>
+          <a class="nav-link" href="/campgrounds/new"><b>New Campground</b></a>
+        </div>
+        <div class="navbar-nav ms-auto">
+          <% if(!currentUser) { %>
+          <a class="nav-link" href="/login"><b>Login</b></a>
+          <a class="nav-link" href="/register"><b>Register</b></a>
+          <% } else { %>
+          <a class="nav-link" href="/#"><b>Welcome! <%= currentUser.username %></b></a>
+          <a class="nav-link" href="/logout"><b>Logout</b></a>
+          <% } %>
+
+        </div>
+      </div>
+    </div>
+</nav>
