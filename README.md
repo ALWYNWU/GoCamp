@@ -311,7 +311,7 @@ First we define a custom error called ExpressError extend Error, we set the mess
 
 This custom error main used to validation error.
 
-1. **catchAsync function**
+2. **catchAsync function**
 
 ```
 /**
@@ -328,7 +328,7 @@ module.exports = func => {
 }
 ```
 
-1. **Error handling function**
+2. **Error handling function**
 
 ```jsx
 /**
