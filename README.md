@@ -1,7 +1,5 @@
 # GoCamp
 
-# GoCamp
-
 ## Intro
 
 - GoCamp is a full stack web app allows user to share campground, include position and pictures. User can creat, edit and delete their campground, and can leave reviews to campgrounds.
