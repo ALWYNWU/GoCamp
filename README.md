@@ -328,7 +328,7 @@ module.exports = func => {
 }
 ```
 
-2. **Error handling function**
+3. **Error handling function**
 
 ```jsx
 /**
