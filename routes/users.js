@@ -1,24 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const passport =require('passport')
-const User = require('../models/user');
 const catchAsync = require('../utils/catchAsync');
-const checkReturnTo = require('../middleware')
 const usersController = require('../controllers/usersController')
 
 router.route('/register')
+
+    /**
+     * Route to register page
+     * Endpoint: /register ===> GET
+     */
     .get(usersController.toRegister)
 
+    /**
+     * Register new user
+     * Endpoint: /register ===> POST
+     */
     .post(catchAsync(usersController.register))
 
-
 router.route('/login')
+
+    /**
+     * Route to login page
+     * Endpoint: /login ===> GET
+     */
     .get(usersController.toLogin)
 
     /**
+     * User Login
      * passport.authenticate middleware
-     * @failureFlash 如果登陆失败是否有flash
-     * @keepSessionInfo true IMPORTANT 保留session 实现登陆玩回到当前页面
+     * @failureFlash: If login fails, if there is a flash
+     * @keepSessionInfo: true IMPORTANT keep session (After login, return to the page before login)
      */
     .post( passport.authenticate('local', 
                 {failureFlash: true, 
@@ -26,6 +38,11 @@ router.route('/login')
                 keepSessionInfo: true}), 
             usersController.login);
 
+/**
+ * User logout
+ * Endpoint: /logout ===> GET
+ */
 router.get('/logout', usersController.logout); 
 
+// Export module
 module.exports = router;

@@ -1,7 +1,10 @@
+// data validator for JavaScript
 const oriJoi = require('joi')
+
+// Clear html tag
 const sanitizeHtml = require('sanitize-html')
 
-
+//this extension constrain input can not contain ant html tag
 const extension = (joi) => ({
     type: 'string',
     base: joi.string(),
@@ -12,9 +15,8 @@ const extension = (joi) => ({
     rules: {
         escapeHTML: {
             validate(value, helpers) {
-                // clean 是sanitizeHtml清理完的
                 const clean = sanitizeHtml(value, {
-                    // 什么都不允许
+                    // no tags allowed
                     allowedTags: [],
                     allowedAttributes: {},
                 });
@@ -29,18 +31,22 @@ const extension = (joi) => ({
 
 const Joi = oriJoi.extend(extension)
 
-
+/**
+ * Validate campground
+ */
 module.exports.campgroundValSchema = Joi.object({
     campground: Joi.object({
         title: Joi.string().required().escapeHTML(),
         price: Joi.number().required().min(0),
-        // image: Joi.string().required(),
         location: Joi.string().required().escapeHTML(),
         description: Joi.string().required().escapeHTML()
     }).required(),
     deleteImages: Joi.array()
 });
 
+/**
+ * Validate review
+ */
 module.exports.reviewValSchema = Joi.object({
     review: Joi.object({
         raiting: Joi.number().required().min(1).max(5),

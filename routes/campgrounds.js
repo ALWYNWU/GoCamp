@@ -1,34 +1,35 @@
 const express  = require('express');
 const router = express.Router();
-const catchAsync = require('../utils/catchAsync')
-const Campground = require('../models/campground');
-const Review = require('../models/review')
+const catchAsync = require('../utils/catchAsync');
+const{storage} = require('../cloudinary');
 
-const{storage} = require('../cloudinary')
-const multer = require('multer')
-const upload = multer({storage})
+/**
+ * Multer is a node.js middleware for handling multipart/form-data, 
+ * which is primarily used for uploading files.
+ */
+const multer = require('multer');
+const upload = multer({storage});
 
 const campgroundsController = require('../controllers/campgroundsController');
+
+// Import middleware
 const {isLoggedIn, validateCampground, isAuthor} = require('../middleware');
 
 
 router.route('/')
 
     /**
-    * Get all campgrounds
+    * Get all campgrounds and display on index page
     * Endpoint: /campgrounds ===> GET
-    * Pass campgrounds to front-end
     */
     .get(catchAsync(campgroundsController.index))
 
     /**
      * Creat new campground and save it to database
+     * isLoggedIn: must login to creat campground
      * Endpoint: /campgrounds ===> POST
-     * Then redirect to campground details
      */
     .post(isLoggedIn, upload.array('image'), validateCampground, catchAsync(campgroundsController.creatCampground))
-
-
 
 /**
  * Route to creat new campground page
@@ -36,7 +37,6 @@ router.route('/')
  * This api should before '/campgrounds/:id', cause it will parse 'new' as 'id'
  */
  router.get('/new', isLoggedIn, campgroundsController.toNewForm);
-
 
 router.route('/:id')
 
@@ -49,7 +49,6 @@ router.route('/:id')
     /**
      * Edit campground, accept data from front-end, update data in database
      * Endpoint: /campgrounds/id ===> PUT (POST fake as PUT)
-     * {...req.body.campground} represents pass an object
      */
     .put(isLoggedIn, isAuthor,upload.array('image'), validateCampground, catchAsync(campgroundsController.updateCampground))
 
@@ -61,13 +60,10 @@ router.route('/:id')
 
 
 /**
- * Route to  edit page
+ * Route to edit page
  * Endpoint: /campgrounds/id/edit ===> GET
- * Pass campground to front-end
  */
 router.get('/:id/edit',isLoggedIn, isAuthor, catchAsync(campgroundsController.toEditForm));
 
-
-
-
+// export
 module.exports = router;

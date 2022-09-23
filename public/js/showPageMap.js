@@ -16,6 +16,8 @@ const el = document.createElement('div');
 const width = 50;
 const height = 50;
 el.className = 'marker';
+
+// custom marker
 el.style.backgroundImage = `url(https://cdn-icons-png.flaticon.com/512/1600/1600565.png)`;
 el.style.width = `${width}px`;
 el.style.height = `${height}px`;

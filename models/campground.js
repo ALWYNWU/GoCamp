@@ -2,25 +2,48 @@ const mongoose = require('mongoose');
 const Review = require('./review');
 const Schema = mongoose.Schema;
 
+/**
+ * ImageSchema: Nest in CampgroundSchema
+ * Store campground images
+ * Creat it separately for it's onw function 
+ */
 const ImageSchema = new Schema({
     url: String,
     filename: String
 });
 
+/**
+ * thumbnail function
+ * Show thumbnails when edit campgrounds
+ */
 ImageSchema.virtual('thumbnail').get(function() {
     return this.url.replace('/upload', '/upload/w_200');
 })
 
-// 作为json传递时保留virtual
+/**
+ * thumbnail is virtual
+ * Set opts to keep virtuals when CampgroundSchema pass as JSON
+ * Pass opts when creat CampgroundSchema
+ */
 const opts = { toJSON: { virtuals: true } };
 
+/**
+ * CampgroundSchema
+ */
 const CampgroundSchema = new Schema({
     title: String,
     images: [ImageSchema],
+
+    /**
+     * Information for Mapbox api 
+     * Don't do `{ location: { type: String } }`
+     * 'location.type' must be 'Point'
+     * 'coordinates' : longtitude and latitude
+     */
     geometry: {
         type: {
-          type: String, // Don't do `{ location: { type: String } }`
-          enum: ['Point'], // 'location.type' must be 'Point'
+          type: String,
+          enum: ['Point'],
           required: true
         },
         coordinates: {
@@ -43,6 +66,10 @@ const CampgroundSchema = new Schema({
     }
 }, opts);
 
+/**
+ * Override 'findOneAndDelete'
+ * Delete campground's review when delete campground
+ */
 CampgroundSchema.post('findOneAndDelete', async function (doc) {
     if(doc) {
         await Review.deleteMany({
@@ -53,6 +80,10 @@ CampgroundSchema.post('findOneAndDelete', async function (doc) {
     }
 })
 
+/**
+ * When click on cluster maps
+ * Popup links link to campground details page
+ */
 CampgroundSchema.virtual('properties.popUpMarkup').get(function() {
     return `<strong><a href="/campgrounds/${this._id}">${this.title}</a></strong>
             <p>${this.location}</p>`

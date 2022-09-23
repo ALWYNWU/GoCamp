@@ -1,26 +1,32 @@
-// if(process.env.NODE_ENV !== 'production') {
-//     require('dotenv').config();
-// }
 require('dotenv').config();
-
-
 
 const express  = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
+
+// methodOverride used to fake POST request to PUT and DELETE
 const methodOverride = require('method-override');
+
+// partial and block template functions for the EJS template engine
 const ejsMate = require('ejs-mate');
-const catchAsync = require('./utils/catchAsync')
+
 const ExpressError = require('./utils/ExpressError')
+
+// a special area of the session used for storing messages
+// the message is available to the next page that is to be rendered.
 const flash = require('connect-flash');
+
+// User password related package
+// Automatically encrypt password
 const passport = require('passport');
 const localStrategy = require('passport-local');
+
 const User = require('./models/user');
 
+ // Security related package
 const helmet = require('helmet')
-
+// Prevent mongo injection
 const mongoSanitize = require('express-mongo-sanitize')
-
 
 const session = require('express-session')
 
@@ -28,14 +34,11 @@ const userRoutes = require('./routes/users')
 const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
 
+// Used to store session
 const MongoDBStore = require('connect-mongo');
 
-const dbUrl =process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
-// const dbUrl = 'mongodb://localhost:27017/yelp-camp'
-/**
- * Connect Database (MongoDB, Mongoose)
- * mongodb://localhost:27017/yelp-camp
- */
+// Connect database
+const dbUrl =process.env.DB_URL;
 mongoose.connect(dbUrl,{
     useNewUrlParser: true,
     useCreateIndex: true,
@@ -74,7 +77,7 @@ app.use(express.urlencoded({extended: true}))
  */
 app.use(methodOverride('_method'));
 
-// 防止mongo injection
+// prevent mongo injection
 app.use(mongoSanitize());
 
 // security package
@@ -85,9 +88,10 @@ app.use(
     })
 );
 
+// set static resources path
 app.use(express.static(path.join(__dirname, 'public')))
 
-// 储存session
+// Store session
 const store = MongoDBStore.create({
     mongoUrl: dbUrl,
     touchAfter: 24 * 60 * 60,
@@ -115,12 +119,12 @@ const sessionConfig = {
     }
 }
 
-// session需要再passport.session()之前
+// session needs before passport.session()
 app.use(session(sessionConfig))
 app.use(flash());
 
 app.use(passport.initialize());
-// session中包含用户数据
+// user information will be contained in session
 app.use(passport.session());
 // authenticate() generates a function that is used in passport's localStrategy
 passport.use(new localStrategy(User.authenticate()));
@@ -130,17 +134,28 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 
-// middleware
+// this middleware will handle all request and response
 app.use((req, res, next) => {
 
+    /**
+     * If the url before login contains originalUrl
+     * Reserve this url to req.session.returnTo and this will be 
+     * used to redirect to the page before login
+     */
     if(!['/login','/'].includes(req.originalUrl)){
         req.session.returnTo = req.originalUrl;
     }
 
-    // passport会将session中的user deserialize然后储存到request中 只包含 id username和email
+    // Passport is going to take the user deserialize from the session and 
+    // store it into the Request with just the ID username and the email
+    // then front end can access user info through currentUser
+    // Ex: if currentUser doesn't exist, do not show edit and delete button
     res.locals.currentUser = req.user;
+
+    // pass flash message information to front end
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
+
     next();
 })
 
@@ -159,15 +174,16 @@ app.get('/', (req, res) => {
 });
 
 /**
- * 处理404 error
+ * 404 error
  */
 app.all('*', (req, res, next) => {
+
+    // This error will pass to error handling function
     next(new ExpressError('Page Not Found', 404))
 })
 
 /**
- * This function use to handle error
- * 用来处理别的error
+ * Error handling function
  * DEFAULT statusCode = 500, message = 'Something went wrong'
  */
 app.use((err, req, res, next) => {

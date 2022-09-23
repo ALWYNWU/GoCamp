@@ -4,11 +4,7 @@ const {places, descriptors} = require('./seedHelpers');
 const Campground = require('../models/campground');
 
 const dbUrl ='mongodb+srv://YILONG:Wyl389966@cluster0.mttw4f7.mongodb.net/?retryWrites=true&w=majority';
-// const dbUrl = 'mongodb://localhost:27017/yelp-camp'
-/**
- * Connect Database (MongoDB, Mongoose)
- * mongodb://localhost:27017/yelp-camp
- */
+
 mongoose.connect(dbUrl,{
     useNewUrlParser: true,
     useCreateIndex: true,
