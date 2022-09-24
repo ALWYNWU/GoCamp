@@ -2,7 +2,7 @@
 
 ## Intro
 
-- GoCamp is a full stack web app allows user to share campground, include position and pictures. User can creat, edit and delete their campground, and can leave reviews to campgrounds.
+- GoCamp is a full stack web app allows user to share campground, include position and pictures. User can create, edit and delete their campground, and can leave reviews to campgrounds.
 - GoCamp is developed based on Nodejs, backend uses Express as server and use Mongoose and MongoDB as ORM and database. Use Ejs as template engine.
 - GoCamp project follows MVC  architecture and RESTful API.
 - Complete authentication and authorization mechanisms, users cannot operate campground and comments created by others. Administrator can operate all campgrounds and reviews.
